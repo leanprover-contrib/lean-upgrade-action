@@ -1,0 +1,14 @@
+# action.yml
+name: 'upgrade-lean'
+description: 'update master to the latest Lean/mathlib if compatible'
+inputs:
+  remote:
+    description: 'Which remote to push to'
+    required: false
+    default: 'origin'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.remote }}
