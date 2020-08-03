@@ -51,7 +51,7 @@ leanproject up
 leanproject build
 ```"""
     open_issue_on_failure(sys.argv[1], 'Automatic upgrade has failed', s)
-    exit(0)
+    exit(1)
 
 
 def upgrade_and_build():
