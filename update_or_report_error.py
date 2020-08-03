@@ -8,6 +8,11 @@ import sys
 # 1 : repo name
 # 2 : bot token
 
+issue_title = 'Automatic upgrade has failed'
+
+repo_name = sys.argv[1]
+bot_token = sys.argv[2]
+
 def get_dependencies():
     with open('leanpkg.toml', 'r') as lean_toml:
         parsed_toml = toml.loads(lean_toml.read())
@@ -28,12 +33,12 @@ def diff_url_from_dep(old_dep, new_dep):
     curr = new_dep['rev']
     return f'{repo}/compare/{prev}...{curr}'
 
-def open_issue_on_failure(repo_name, title, body):
-    repo = Github(sys.argv[2]).get_repo(repo_name)
+def open_issue_on_failure(body):
+    repo = Github(bot_token).get_repo(repo_name)
     issues = repo.get_issues()
-    if any(i.title == title for i in issues):
+    if any(i.title == issue_title for i in issues):
         return
-    repo.create_issue(title, body)
+    repo.create_issue(issue_title, body)
 
 
 def error_on_build(original_deps, original_lean, new_deps, new_lean):
@@ -50,9 +55,15 @@ def error_on_build(original_deps, original_lean, new_deps, new_lean):
 leanproject up
 leanproject build
 ```"""
-    open_issue_on_failure(sys.argv[1], 'Automatic upgrade has failed', s)
+    open_issue_on_failure(s)
     exit(1)
 
+def close_open_issue():
+    repo = Github(sys.argv[2]).get_repo(repo_name)
+    issues = [i for i in repo.get_issues() if i.title == issue_title and i.state == 'open']
+    for i in issues:
+        i.create_comment('This issue has been resolved!')
+        i.edit(state='closed')
 
 def upgrade_and_build():
     original_deps, original_lean = get_dependencies()
@@ -75,5 +86,6 @@ def upgrade_and_build():
         error_on_build(original_deps, original_lean, new_deps, new_lean)
         return
 
-print('repo: ', sys.argv[1])
+    close_open_issue()
+
 upgrade_and_build()
