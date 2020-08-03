@@ -3,8 +3,10 @@
 python -m pip install --upgrade pip mathlibtools
 curl https://raw.githubusercontent.com/Kha/elan/master/elan-init.sh -sSf | sh -s -- -y
 PATH="$PATH:$HOME/.elan/bin"
-python update_or_report_error.py 
+python update_or_report_error.py
 
-branch_name="lean-$(grep -oP 'lean_version = \"leanprover-community\/lean\:\K[^\=]+(?=\")' leanpkg.toml)"
-echo "Updating mathlib branch $branch_name to match master"
-git push "$1" HEAD:refs/heads/$branch_name
+git config user.email "leanprover.community@gmail.com"
+git config user.name "leanprover-community-bot"
+git add leanpkg.toml
+git commit -m "auto update dependencies"
+git push
