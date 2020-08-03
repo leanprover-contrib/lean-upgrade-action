@@ -5,8 +5,9 @@ FROM python:3.8-buster
 
 COPY . /lean-upgrade-action/
 
-#COPY entrypoint.sh /entrypoint.sh
-#COPY update_or_report_error.py /update_or_report_error.py
+RUN python -m pip install --upgrade pip mathlibtools
+RUN curl https://raw.githubusercontent.com/Kha/elan/master/elan-init.sh -sSf | sh -s -- -y
+
 
 # Code file to execute when the docker container starts up (`entrypoint.sh`)
 ENTRYPOINT ["/lean-upgrade-action/entrypoint.sh"]
