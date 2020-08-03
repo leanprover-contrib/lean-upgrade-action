@@ -1,8 +1,6 @@
 #!/bin/bash -l
 
-echo "$HOME/.elan/bin"
-ls "$HOME/.elan/bin"
-PATH="$PATH:$HOME/.elan/bin"
+PATH="$PATH:/root/.elan/bin"
 python /lean-upgrade-action/update_or_report_error.py "$1" "$2" || exit 1
 
 git config user.email "leanprover.community@gmail.com"
