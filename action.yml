@@ -2,6 +2,9 @@
 name: 'upgrade-lean'
 description: 'update master to the latest Lean/mathlib if compatible'
 inputs:
+  repo:
+    description: 'repo name'
+    required: true
   access-token:
     description: 'GitHub PAT to create issue'
     required: true
@@ -14,5 +17,6 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
+    - ${{ inputs.repo }}
     - ${{ inputs.access-token }}
     - ${{ inputs.remote }}
