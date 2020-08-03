@@ -8,21 +8,6 @@ it will create an issue in your project repository.
 
 ## Usage
 
-### Set up a personal access token
-
-Since this action can open issues in your repository,
-it needs access to some GitHub account to post the issues.
-
-Go to the [Personal access tokens](https://github.com/settings/tokens) page on GitHub,
-and create a new token.
-Make sure **repo** and **write:discussion** are checked.
-
-Create a new secret in your project repository at
-https://github.com/your-org/your-repo/settings/secrets
-with name `PAT`. Use the token you just created as the value.
-
-### Set up the Actions workflow
-
 Create a file in your Lean project directory, `/.github/workflows/upgrade_lean.yml`, with contents:
 
 ```yaml
@@ -41,8 +26,10 @@ jobs:
         uses: leanprover-contrib/lean-upgrade-action@master
         with:
           repo: ${{ github.repository }}
-          access-token: ${{ secrets.PAT }}
+          access-token: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+### Advanced notes
 
 If you are running this action from a repo other than the one it is updating,
 or if you have set up branch protection rules on your `lean-x.y.z` branches,
