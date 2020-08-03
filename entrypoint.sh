@@ -12,4 +12,4 @@ git config user.email "leanprover.community@gmail.com"
 git config user.name "leanprover-community-bot"
 git add leanpkg.toml
 git commit -m "auto update dependencies"
-git push "$2"
+git push "$3"
