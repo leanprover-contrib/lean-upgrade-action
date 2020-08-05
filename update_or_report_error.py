@@ -3,6 +3,7 @@ import subprocess
 import toml
 import git
 import sys
+import urllib.request
 
 # args:
 # 1 : repo name
@@ -65,10 +66,31 @@ def close_open_issue():
         i.create_comment('This issue has been resolved!')
         i.edit(state='closed')
 
+def leanpkg_upgrade_proc():
+    with open('leanpkg.toml', 'r') as lean_toml:
+        local_toml = toml.loads(lean_toml.read())
+    local_lean_version = local_toml['package']['lean_version']
+    urllib.request.urlretrieve('https://raw.githubusercontent.com/leanprover-community/mathlib/master/leanpkg.toml', 'mathlib_leanpkg.toml')
+    with open('leanpkg.toml', 'r') as lean_toml:   
+        mathlib_toml = toml.loads(lean_toml.read())
+    mathlib_lean_version = mathlib_toml['package']['lean_version']
+    lean_version_prefix = 'leanprover-community/lean:'
+    if local_lean_version.startswith(lean_version_prefix) and mathlib_lean_version.startswith(lean_version_prefix):
+        local_lean_version_int = [int(i) for i in local_lean_version[len(lean_version_prefix):].split('.')]
+        mathlib_lean_version_int = [int(i) for i in mathlib_lean_version[len(lean_version_prefix):].split('.')]
+        if mathlib_lean_version_int > local_lean_version_int:
+            local_toml['package']['lean_version'] = mathlib_lean_version
+            with open('leanpkg.toml', 'w') as lean_toml:
+                toml.dump(local_toml, lean_toml)
+    return subprocess.Popen(['leanpkg', 'upgrade'])
+
 def upgrade_and_build():
     original_deps, original_lean = get_dependencies()
 
-    proc = subprocess.Popen(['leanproject', 'up'])
+    if 'mathlib' in original_deps:
+        proc = subprocess.Popen(['leanproject', 'up'])
+    else:
+        proc = leanpkg_upgrade_proc()
     out, err = proc.communicate()
 
     if proc.returncode != 0:

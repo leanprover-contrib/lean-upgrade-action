@@ -6,6 +6,19 @@ to their latest versions.
 If the automatic upgrade fails,
 it will create an issue in your project repository.
 
+The upgrade logic works like this:
+* If your project depends on mathlib, it will call `leanproject upgrade-mathlib`. That is,
+  - The Lean version will be bumped to the Lean version of mathlib master.
+  - The mathlib dependency will be bumped to mathlib master.
+  - All other dependencies will be bumped to the same Lean version, if they have a corresponding branch.
+* If your project does not depend on mathlib, but the Lean version is comparable to that of mathlib master,
+  e.g. both are `leanprover-community/lean`:
+  - The Lean version will be bumped to the Lean version of mathlib master.
+  - All other dependencies will be bumped to the same Lean version, if they have a corresponding branch.
+* If your project uses a Lean version incomparable to that of mathlib:
+  - The Lean version will not change.
+  - All other dependencies will be bumped to the latest releases for your current Lean version.
+
 ## Usage
 
 Create a file in your Lean project directory, `/.github/workflows/upgrade_lean.yml`, with contents:
