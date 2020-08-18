@@ -57,7 +57,7 @@ leanproject up
 leanproject build
 ```"""
     open_issue_on_failure(s)
-    exit(1)
+    exit(0)
 
 def close_open_issue():
     repo = Github(sys.argv[2]).get_repo(repo_name)
