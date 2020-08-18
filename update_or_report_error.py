@@ -101,7 +101,7 @@ def upgrade_and_build():
     if new_deps == original_deps:
         up_to_date()
 
-    proc = subprocess.Popen(['leanpkg', 'build'])
+    proc = subprocess.Popen(['leanpkg', 'test'])
     out, err = proc.communicate()
 
     if proc.returncode != 0:
