@@ -71,18 +71,30 @@ def leanpkg_upgrade_proc():
         local_toml = toml.loads(lean_toml.read())
     local_lean_version = local_toml['package']['lean_version']
     urllib.request.urlretrieve('https://raw.githubusercontent.com/leanprover-community/mathlib/master/leanpkg.toml', 'mathlib_leanpkg.toml')
-    with open('leanpkg.toml', 'r') as lean_toml:   
+    with open('mathlib_leanpkg.toml', 'r') as lean_toml:
         mathlib_toml = toml.loads(lean_toml.read())
     mathlib_lean_version = mathlib_toml['package']['lean_version']
     lean_version_prefix = 'leanprover-community/lean:'
     if local_lean_version.startswith(lean_version_prefix) and mathlib_lean_version.startswith(lean_version_prefix):
         local_lean_version_int = [int(i) for i in local_lean_version[len(lean_version_prefix):].split('.')]
         mathlib_lean_version_int = [int(i) for i in mathlib_lean_version[len(lean_version_prefix):].split('.')]
+        print(mathlib_lean_version_int, local_lean_version_int)
         if mathlib_lean_version_int > local_lean_version_int:
+            print('iii')
             local_toml['package']['lean_version'] = mathlib_lean_version
             with open('leanpkg.toml', 'w') as lean_toml:
                 toml.dump(local_toml, lean_toml)
     return subprocess.Popen(['leanpkg', 'upgrade'])
+
+def commit_and_push():
+    repo = git.Repo('.')
+    index = repo.index
+    index.add(['leanpkg.toml'])
+    author = git.Actor('leanprover-community-bot', 'leanprover.community@gmail.com')
+    index.commit('auto update dependencies', author=author, committer=author)
+    print('Pushing commit to remote')
+    repo.remote().push()
+
 
 def upgrade_and_build():
     original_deps, original_lean = get_dependencies()
@@ -98,7 +110,7 @@ def upgrade_and_build():
 
     new_deps, new_lean = get_dependencies()
 
-    if new_deps == original_deps:
+    if new_deps == original_deps and new_lean == original_lean:
         up_to_date()
 
     proc = subprocess.Popen(['leanpkg', 'test'])
@@ -108,6 +120,7 @@ def upgrade_and_build():
         error_on_build(original_deps, original_lean, new_deps, new_lean)
         return
 
+    commit_and_push()
     close_open_issue()
 
 upgrade_and_build()
