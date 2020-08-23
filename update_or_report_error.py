@@ -80,11 +80,13 @@ def leanpkg_upgrade_proc():
         mathlib_lean_version_int = [int(i) for i in mathlib_lean_version[len(lean_version_prefix):].split('.')]
         print(mathlib_lean_version_int, local_lean_version_int)
         if mathlib_lean_version_int > local_lean_version_int:
-            print('iii')
             local_toml['package']['lean_version'] = mathlib_lean_version
-            print(local_toml)
             with open('leanpkg.toml', 'w') as lean_toml:
-                toml.dump(local_toml, lean_toml)
+                # `preserve = True` seems to be an undocumented feature of `toml`.
+                # without it, when the project has exactly one dependency,
+                # the resulting `leanpkg.toml` is malformed: it compresses the `dependencies` section
+                # into `[dependencies.repo_name]`.
+                toml.dump(local_toml, lean_toml, encoder=toml.TomlEncoder(preserve=True))
     return subprocess.Popen(['leanpkg', 'upgrade'])
 
 def commit_and_push():
