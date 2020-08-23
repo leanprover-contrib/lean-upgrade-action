@@ -82,6 +82,7 @@ def leanpkg_upgrade_proc():
         if mathlib_lean_version_int > local_lean_version_int:
             print('iii')
             local_toml['package']['lean_version'] = mathlib_lean_version
+            print(local_toml)
             with open('leanpkg.toml', 'w') as lean_toml:
                 toml.dump(local_toml, lean_toml)
     return subprocess.Popen(['leanpkg', 'upgrade'])
