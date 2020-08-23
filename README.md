@@ -40,6 +40,8 @@ jobs:
         with:
           repo: ${{ github.repository }}
           access-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: update version branches
+        uses: leanprover-contrib/update-versions-action@master
 ```
 
 ### Advanced notes
@@ -67,7 +69,15 @@ Alternatively, you can specify a remote name for the branch to push to; it defau
         remote: new-origin
 ```
 
-If you don't know what this means, you can probably ignore it.
+
+This action is often used in combination with the 
+[update versions action](https://github.com/leanprover-contrib/update-versions-action).
+Unfortunately, due to limitations in the GitHub Actions API,
+that action will only be triggered by this one when a token other than `secrets.GITHUB_TOKEN` is used.
+If you change the token away from GitHub's default,
+you should probably remove the `update version branches` step from the workflow.
+
+If you don't know what any of this means, you can probably ignore it.
 Just copy the first block of code into your project.
 
 ## Options
