@@ -3,7 +3,7 @@
 This is a GitHub action for Lean projects.
 At a scheduled time, it will try to update the Lean version and dependencies of your project
 to their latest versions.
-If the automatic upgrade fails,
+If the automatic upgrade fails (e.g. if your project does not build or fails its `leanpkg test`),
 it will create an issue in your project repository.
 
 The upgrade logic works like this:
